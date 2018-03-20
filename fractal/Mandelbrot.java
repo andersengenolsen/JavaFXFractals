@@ -31,8 +31,6 @@ import javafx.scene.shape.Rectangle;
  *
  * @author Anders Engen Olsen
  */
-
-
 public class Mandelbrot implements EventHandler<MouseEvent> {
 
     // Width/height ratio for canvas
