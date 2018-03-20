@@ -82,15 +82,8 @@ public class CellularAutomata {
         int[] binary = new int[8];
 
         // int[] from int
-        for (int i = 7, num = rule; i >= 0; i--, num >>>= 1) {
+        for (int i = 0, num = rule; i <= 7; i++, num >>>= 1) {
             binary[i] = num & 1;
-        }
-
-        // Reversing
-        for (int i = 0; i < binary.length / 2; i++) {
-            int temp = binary[i];
-            binary[i] = binary[binary.length - i - 1];
-            binary[binary.length - i - 1] = temp;
         }
 
         return binary;
