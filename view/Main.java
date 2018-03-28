@@ -1,6 +1,8 @@
 package view;
 
+import fractal.CantorSet;
 import fractal.CellularAutomata;
+import fractal.Fractal;
 import fractal.Mandelbrot;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -42,6 +44,7 @@ public class Main extends Application {
     // Tabs
     private Tab tabMandelbrot;
     private Tab tabAutomata;
+    private Tab tabCantor;
 
     // Reference to all tabs
     private ArrayList<Tab> tabs;
@@ -72,8 +75,7 @@ public class Main extends Application {
      * @return Scene GUI
      * @see #initTabs()
      * @see #initTopBox(int, int)
-     * @see #setUpMandelbrotTab(GraphicsContext, HBox)
-     * @see #setUpAutomataTab(GraphicsContext, HBox)
+     * @see #setUpTab(Fractal, HBox)
      */
     private Scene initScene() {
 
@@ -104,11 +106,17 @@ public class Main extends Application {
             Group group = new Group();
             group.getChildren().addAll(canvas);
 
+            Fractal fractal;
+
             // Setting up
-            if (tab.equals(tabMandelbrot)) {
-                setUpMandelbrotTab(gc, topBox);
-            } else if (tab.equals(tabAutomata))
-                setUpAutomataTab(gc, topBox);
+            if (tab.equals(tabMandelbrot))
+                fractal = new Mandelbrot(gc, CANVAS_WIDTH, CANVAS_HEIGHT);
+            else if (tab.equals(tabAutomata))
+                fractal = new CellularAutomata(gc, CANVAS_WIDTH, CANVAS_HEIGHT);
+            else
+                fractal = new CantorSet(gc, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+            setUpTab(fractal, topBox);
 
             // -- VBox container for the entire layout within the tab. -- //
             VBox vBox = new VBox();
@@ -137,61 +145,41 @@ public class Main extends Application {
         return scene;
     }
 
-    /**
-     * Initializing Mandelbrot-object, and adding buttons to top vbox.
-     *
-     * @param gc GraphicsContext for drawing
-     * @see Mandelbrot
-     */
-    private void setUpMandelbrotTab(GraphicsContext gc, HBox hBox) {
+    private void setUpTab(Fractal fractal, HBox hBox) {
 
-        Mandelbrot mandelbrot = new Mandelbrot(gc, CANVAS_WIDTH, CANVAS_HEIGHT);
-
-        Button btnDraw = new Button("Create Mandelbrot");
+        Button btnDraw = new Button("Generate");
         Button btnReset = new Button("Reset");
 
-        // Draw-button.
-        btnDraw.setOnAction((ActionEvent e) -> {
-            mandelbrot.drawMandelbrot();
-        });
+        if (fractal instanceof CellularAutomata) {
 
-        // Reset button
-        btnReset.setOnAction((ActionEvent e) -> {
-            mandelbrot.reset();
-        });
+            CellularAutomata cellularAutomata = (CellularAutomata) fractal;
 
-        hBox.getChildren().addAll(btnDraw, btnReset);
-    }
+            // TextArea for ruleset
+            TextField rulesetTxt = new TextField();
+            rulesetTxt.setPromptText("Ruleset (1-255)");
+
+            btnDraw.setOnAction((ActionEvent e) -> {
+
+                try {
+                    cellularAutomata.setRule(Integer.parseInt(rulesetTxt.getText()));
+                    cellularAutomata.draw();
+                } catch (IllegalArgumentException err) {
+                    new Alert(Alert.AlertType.ERROR, err.getMessage()).showAndWait();
+                }
+
+            });
+
+            hBox.getChildren().addAll(btnDraw, rulesetTxt, btnReset);
 
 
-    /**
-     * Initializing CellularAutomata-object, and adding buttons to top vbox.
-     *
-     * @param gc GraphicsContext for drawing
-     * @see CellularAutomata
-     * @see CellularAutomata#start(int)
-     */
-    private void setUpAutomataTab(GraphicsContext gc, HBox hBox) {
-        CellularAutomata cellularAutomata = new CellularAutomata(gc, CANVAS_WIDTH, CANVAS_HEIGHT);
+        } else {
+            // Draw-button.
+            btnDraw.setOnAction((ActionEvent e) -> {
+                fractal.draw();
+            });
 
-        // TextArea for ruleset
-        TextField rulesetTxt = new TextField();
-        rulesetTxt.setPromptText("Ruleset (1-255)");
-
-        Button btnGenerate = new Button("Generate CA");
-
-        // Draw-button
-        btnGenerate.setOnAction((ActionEvent e) -> {
-
-            try {
-                cellularAutomata.start(Integer.parseInt(rulesetTxt.getText()));
-            } catch (IllegalArgumentException err) {
-                new Alert(Alert.AlertType.ERROR, err.getMessage()).showAndWait();
-            }
-
-        });
-
-        hBox.getChildren().addAll(btnGenerate, rulesetTxt);
+            hBox.getChildren().addAll(btnDraw, btnReset);
+        }
     }
 
     /**
@@ -200,11 +188,13 @@ public class Main extends Application {
     private void initTabs() {
         tabMandelbrot = new Tab("Mandelbrot");
         tabAutomata = new Tab("Cellular Automata");
+        tabCantor = new Tab("Cantor Set");
 
         tabs = new ArrayList<>();
 
         tabs.add(tabMandelbrot);
         tabs.add(tabAutomata);
+        tabs.add(tabCantor);
     }
 
     /**

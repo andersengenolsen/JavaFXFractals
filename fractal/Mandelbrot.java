@@ -31,7 +31,8 @@ import javafx.scene.shape.Rectangle;
  *
  * @author Anders Engen Olsen
  */
-public class Mandelbrot implements EventHandler<MouseEvent> {
+public class Mandelbrot extends Fractal
+        implements EventHandler<MouseEvent> {
 
     // Width/height ratio for canvas
     private final double WIDTH_HEIGHT_RATIO;
@@ -45,9 +46,6 @@ public class Mandelbrot implements EventHandler<MouseEvent> {
     // Y-positions for selection rectangle.
     private double startY, deltaY;
 
-    // Drawing
-    private GraphicsContext gc;
-
     // Min and max values for the real and imaginary part.
     private double reMin = -2.00; // Re
     private double reMax = 2.00; // Re
@@ -57,10 +55,6 @@ public class Mandelbrot implements EventHandler<MouseEvent> {
     // We are supposed to find out if C makes Z converge towards infinity.
     // To be sure, we have to test an infinite number of times...
     private int maxIterations = 512;
-
-    // Canvas dimensions
-    private double canvasWidth;
-    private double canvasHeight;
 
     /**
      * Constructor.
@@ -72,9 +66,7 @@ public class Mandelbrot implements EventHandler<MouseEvent> {
      * @param canvasHeight height
      */
     public Mandelbrot(GraphicsContext gc, double canvasWidth, double canvasHeight) {
-        this.gc = gc;
-        this.canvasWidth = canvasWidth;
-        this.canvasHeight = canvasHeight;
+        super(gc, canvasWidth, canvasHeight);
 
         // Ratio
         WIDTH_HEIGHT_RATIO = canvasWidth / canvasHeight;
@@ -91,11 +83,12 @@ public class Mandelbrot implements EventHandler<MouseEvent> {
     /**
      * Setting real / imaginary values back to "normal", redrawing.
      *
-     * @see #drawMandelbrot()
+     * @see #draw()
      */
+    @Override
     public void reset() {
-        // Clear canvas
-        gc.clearRect(0, 0, canvasWidth, canvasHeight);
+
+        super.reset();
 
         // "Normal" values
         reMin = -2.00;
@@ -104,7 +97,7 @@ public class Mandelbrot implements EventHandler<MouseEvent> {
         imMax = 2.00;
 
         // Drawing
-        drawMandelbrot();
+        draw();
     }
 
     /**
@@ -123,7 +116,8 @@ public class Mandelbrot implements EventHandler<MouseEvent> {
      * @see #computeRe(double)
      * @see #computeIm(double)
      */
-    public void drawMandelbrot() {
+    @Override
+    public void draw() {
 
         // Removing selection rectangle if on screen
         if (group.getChildren().contains(rectangle))
@@ -273,7 +267,7 @@ public class Mandelbrot implements EventHandler<MouseEvent> {
             this.reMax = reMax;
             this.imMin = imMin;
 
-            drawMandelbrot();
+            draw();
         }
     }
 }

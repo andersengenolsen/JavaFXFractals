@@ -11,25 +11,21 @@ import javafx.scene.paint.Color;
  *
  * @author Anders Engen Olsen
  */
-public class CellularAutomata {
+public class CellularAutomata extends Fractal {
 
     private final int CELL_SIZE = 1;
 
     // The current ruleset
     private int[] ruleset;
 
+    // Current rule
+    private int rule;
+
     // Array with all cells
     private int[] cells;
 
     // Colors. Binary CA, 2 colors possible
     private Color[] colors = new Color[2];
-
-    // Drawing
-    private GraphicsContext gc;
-
-    // Canvas-dimensions
-    private double canvasWidth;
-    private double canvasHeight;
 
     /**
      * Constructor.
@@ -39,34 +35,10 @@ public class CellularAutomata {
      * @param canvasHeight height canvas
      */
     public CellularAutomata(GraphicsContext gc, double canvasWidth, double canvasHeight) {
-
-        this.gc = gc;
-        this.canvasWidth = canvasWidth;
-        this.canvasHeight = canvasHeight;
+        super(gc, canvasWidth, canvasHeight);
 
         // Init array, all cells.
         cells = new int[(int) canvasWidth / CELL_SIZE];
-    }
-
-    /**
-     * Driver method.
-     * Resetting, calculating new rule, call to draw()
-     *
-     * @param rule # ruleset to generate
-     * @throws IllegalArgumentException Invalid ruleset
-     * @see #reset()
-     * @see #intToBinaryReverse(int)
-     * @see #draw()
-     */
-    public void start(int rule) {
-
-        if (rule > 255 || rule < 0) {
-            throw new IllegalArgumentException("Ruleset must be between 0 and 255!");
-        }
-
-        reset();
-        ruleset = intToBinaryReverse(rule);
-        draw();
     }
 
     /**
@@ -92,10 +64,23 @@ public class CellularAutomata {
     /**
      * Drawing 1D CA on Canvas.
      * Call to generate(int[]) to generate next generation (next line)
+     * <p>
+     * * @param rule # ruleset to generate
      *
+     * @throws IllegalArgumentException Invalid ruleset
+     * @see #reset()
+     * @see #intToBinaryReverse(int)
      * @see #generate(int[])
      */
-    private void draw() {
+    @Override
+    public void draw() {
+
+        if (rule > 255 || rule < 0) {
+            throw new IllegalArgumentException("Ruleset must be between 0 and 255!");
+        }
+
+        reset();
+        ruleset = intToBinaryReverse(rule);
 
         // Current generation (y-position on canvas)
         int generation = 0;
@@ -173,7 +158,11 @@ public class CellularAutomata {
      * Adding new colors.
      * Resetting canvas
      */
-    private void reset() {
+    @Override
+    public void reset() {
+
+        super.reset();
+
         // Init-values
         for (int i = 0; i < cells.length; i++) {
             cells[i] = 0;
@@ -186,8 +175,14 @@ public class CellularAutomata {
 
         // mid = 1.
         cells[cells.length / 2] = 1;
+    }
 
-        // Clearing canvas
-        gc.clearRect(0, 0, canvasWidth, canvasHeight);
+    /**
+     * Setting current rule
+     *
+     * @param rule rule to set
+     */
+    public void setRule(int rule) {
+        this.rule = rule;
     }
 }
