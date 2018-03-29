@@ -30,6 +30,10 @@ public abstract class Fractal {
         this.canvasHeight = canvasHeight;
     }
 
+    /**
+     * To be implemented in sub-classes.
+     * Drawing the current fractal to Canvas
+     */
     public abstract void draw();
 
     /**

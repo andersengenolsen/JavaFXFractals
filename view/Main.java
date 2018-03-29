@@ -103,12 +103,14 @@ public class Main extends Application {
             Canvas canvas = new Canvas(CANVAS_WIDTH, CANVAS_HEIGHT);
             GraphicsContext gc = canvas.getGraphicsContext2D();
 
+            // Group containing Canvas
             Group group = new Group();
             group.getChildren().addAll(canvas);
 
+            // The current fractal
             Fractal fractal;
 
-            // Setting up
+            // Assigning
             if (tab.equals(tabMandelbrot))
                 fractal = new Mandelbrot(gc, CANVAS_WIDTH, CANVAS_HEIGHT);
             else if (tab.equals(tabAutomata))
@@ -116,6 +118,7 @@ public class Main extends Application {
             else
                 fractal = new CantorSet(gc, CANVAS_WIDTH, CANVAS_HEIGHT);
 
+            // Setting up tab
             setUpTab(fractal, topBox);
 
             // -- VBox container for the entire layout within the tab. -- //
@@ -145,11 +148,21 @@ public class Main extends Application {
         return scene;
     }
 
+    /**
+     * Setting up a tab, associated to a fractal.
+     * <p>
+     * If the fractal is a CellularAutomata, we need a TextField for input.
+     *
+     * @param fractal Fractal-object
+     * @param hBox    horizontal top box, containing buttons
+     */
     private void setUpTab(Fractal fractal, HBox hBox) {
 
+        // Buttons
         Button btnDraw = new Button("Generate");
         Button btnReset = new Button("Reset");
 
+        // Special case if it is a Cellular Automata
         if (fractal instanceof CellularAutomata) {
 
             CellularAutomata cellularAutomata = (CellularAutomata) fractal;
@@ -159,21 +172,18 @@ public class Main extends Application {
             rulesetTxt.setPromptText("Ruleset (1-255)");
 
             btnDraw.setOnAction((ActionEvent e) -> {
-
                 try {
                     cellularAutomata.setRule(Integer.parseInt(rulesetTxt.getText()));
+
                     cellularAutomata.draw();
                 } catch (IllegalArgumentException err) {
                     new Alert(Alert.AlertType.ERROR, err.getMessage()).showAndWait();
                 }
-
             });
 
             hBox.getChildren().addAll(btnDraw, rulesetTxt, btnReset);
 
-
         } else {
-            // Draw-button.
             btnDraw.setOnAction((ActionEvent e) -> {
                 fractal.draw();
             });

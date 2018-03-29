@@ -75,11 +75,15 @@ public class CellularAutomata extends Fractal {
     @Override
     public void draw() {
 
+        // Rule must be 0-255
         if (rule > 255 || rule < 0) {
             throw new IllegalArgumentException("Ruleset must be between 0 and 255!");
         }
 
+        // Resetting canvas
         reset();
+
+        // Generating ruleset
         ruleset = intToBinaryReverse(rule);
 
         // Current generation (y-position on canvas)
