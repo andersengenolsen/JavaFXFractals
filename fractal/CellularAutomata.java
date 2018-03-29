@@ -64,8 +64,6 @@ public class CellularAutomata extends Fractal {
     /**
      * Drawing 1D CA on Canvas.
      * Call to generate(int[]) to generate next generation (next line)
-     * <p>
-     * * @param rule # ruleset to generate
      *
      * @throws IllegalArgumentException Invalid ruleset
      * @see #reset()
