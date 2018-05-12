@@ -1,8 +1,4 @@
 # JavaFXFractals
-Simple JavaFX-application showcasing various famous fractals.
+JavaFX-application showcasing a few famous fractals.
 
 No more work being done one this.
-
-Project ported to JavaScript.
-
-https://github.com/andersengenolsen/JavascriptFractals
